@@ -10,7 +10,7 @@ import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
 import "./IResolver.sol";
 
-interface IReNft is IERC721Receiver, IERC1155Receiver {
+interface IReNFT is IERC721Receiver, IERC1155Receiver {
     event Lent(
         address indexed nftAddress,
         uint256 indexed tokenId,
@@ -37,11 +37,17 @@ interface IReNft is IERC721Receiver, IERC1155Receiver {
 
     event LendingStopped(uint256 indexed lendingId, uint32 stoppedAt);
 
+    enum NFTStandard {
+        E721,
+        E1155
+    }
+
     /**
      * @dev sends your NFT to ReNFT contract, which acts as an escrow
      * between the lender and the renter
      */
     function lend(
+        IReNFT.NFTStandard[] memory nftStandard,
         address[] memory _nft,
         uint256[] memory _tokenId,
         uint256[] memory _lendAmounts,
@@ -57,6 +63,7 @@ interface IReNft is IERC721Receiver, IERC1155Receiver {
      * must send the collateral (nft price set by the lender in lend)
      */
     function rent(
+        IReNFT.NFTStandard[] memory nftStandard,
         address[] memory _nft,
         uint256[] memory _tokenId,
         uint256[] memory _lendingIds,
@@ -69,6 +76,7 @@ interface IReNft is IERC721Receiver, IERC1155Receiver {
      * collateral
      */
     function returnIt(
+        IReNFT.NFTStandard[] memory nftStandard,
         address[] memory _nft,
         uint256[] memory _tokenId,
         uint256[] memory _lendingIds
@@ -78,6 +86,7 @@ interface IReNft is IERC721Receiver, IERC1155Receiver {
      * @dev claim collateral on rentals that are past their due date
      */
     function claimCollateral(
+        IReNFT.NFTStandard[] memory nftStandard,
         address[] memory _nfts,
         uint256[] memory _tokenIds,
         uint256[] memory _lendingIds
@@ -88,6 +97,7 @@ interface IReNft is IERC721Receiver, IERC1155Receiver {
      * to the lender
      */
     function stopLending(
+        IReNFT.NFTStandard[] memory nftStandard,
         address[] memory _nft,
         uint256[] memory _tokenId,
         uint256[] memory _lendingIds

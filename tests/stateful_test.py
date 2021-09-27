@@ -95,7 +95,7 @@ def find_first(
         _, _, lending_id = _id.split(SEPARATOR)
         item = lending_renting_instance.lending
         if (
-            # (item.nft_standard == nft_standard) and
+            (item.nft_standard == nft_standard) and
             (item.lender_address not in lender_blacklist) and
             (lending_id not in id_blacklist)
         ):
@@ -109,7 +109,7 @@ def find_from_lender(
     for _id, lending_renting_instance in lending_renting.items():
         item = lending_renting_instance.lending
         if (
-            # item.nft_standard == nft_standard and
+            item.nft_standard == nft_standard and
             item.lender_address == lender_address and
             _id not in not_in_id
         ):
@@ -144,6 +144,7 @@ class Renting:
     rent_duration: int
     rented_at: int
     # below are not part of the contract struct
+    nft_standard: NFTStandard
     nft: str
     token_id: int
     lending_id: int
@@ -160,36 +161,37 @@ def concat_lending_id(nft, token_id, lending_id):
 
 
 def lendings_to_lend_args(lendings):
-    args = [[], [], [], [], [], [], []]
+    args = [[], [], [], [], [], [], [], []]
     for lending in lendings:
-        # args[0].append(lending.nft_standard)
-        args[0].append(lending.nft)
-        args[1].append(lending.token_id)
-        args[2].append(lending.lent_amount)
-        args[3].append(lending.max_rent_duration)
-        args[4].append(lending.daily_rent_price)
-        args[5].append(lending.nft_price)
-        args[6].append(lending.payment_token)
+        args[0].append(lending.nft_standard)
+        args[1].append(lending.nft)
+        args[2].append(lending.token_id)
+        args[3].append(lending.lent_amount)
+        args[4].append(lending.max_rent_duration)
+        args[5].append(lending.daily_rent_price)
+        args[6].append(lending.nft_price)
+        args[7].append(lending.payment_token)
     return args
 
 
 def lendings_to_stop_lending_args(lendings):
-    args = [[], [], []]
+    args = [[], [], [], []]
     for lending in lendings:
-        # args[0].append(lending.nft_standard)
-        args[0].append(lending.nft)
-        args[1].append(lending.token_id)
-        args[2].append(lending.lending_id)
+        args[0].append(lending.nft_standard)
+        args[1].append(lending.nft)
+        args[2].append(lending.token_id)
+        args[3].append(lending.lending_id)
     return args
 
 
 def rentings_to_rent_args(rentings):
-    args = [[], [], [], []]
+    args = [[], [], [], [], []]
     for renting in rentings:
-        args[0].append(renting.nft)
-        args[1].append(renting.token_id)
-        args[2].append(renting.lending_id)
-        args[3].append(renting.rent_duration)
+        args[0].append(renting.nft_standard)
+        args[1].append(renting.nft)
+        args[2].append(renting.token_id)
+        args[3].append(renting.lending_id)
+        args[4].append(renting.rent_duration)
     return args
 
 
@@ -661,6 +663,7 @@ class StateMachine:
             rent_duration=1,
             rented_at=0,
             # not part of the contract's renting struct
+            nft_standard=lending.nft_standard,
             nft=lending.nft,
             token_id=lending.token_id,
             lending_id=lending.lending_id,
@@ -696,6 +699,7 @@ class StateMachine:
             rent_duration=1,
             rented_at=0,
             # not part of the contract's renting struct
+            nft_standard=lending.nft_standard,
             nft=lending.nft,
             token_id=lending.token_id,
             lending_id=lending.lending_id,
@@ -747,6 +751,7 @@ class StateMachine:
             rent_duration=1,
             rented_at=0,
             # not part of the contract's renting struct
+            nft_standard=lendinga.nft_standard,
             nft=lendinga.nft,
             token_id=lendinga.token_id,
             lending_id=lendinga.lending_id,
@@ -756,6 +761,7 @@ class StateMachine:
             rent_duration=1,
             rented_at=0,
             # not part of the contract's renting struct
+            nft_standard=lendingb.nft_standard,
             nft=lendingb.nft,
             token_id=lendingb.token_id,
             lending_id=lendingb.lending_id,
@@ -810,17 +816,20 @@ class StateMachine:
             rent_duration=1,
             rented_at=0,
             # not part of the contract's renting struct
+            nft_standard=lendinga.nft_standard,
             nft=lendinga.nft,
             token_id=lendinga.token_id,
-            lending_id=lendinga.lending_id,
+            lending_id=lendinga.lending_id
         )
         rentingb = Renting(
             renter_address=address,
             rent_duration=1,
             rented_at=0,
             # not part of the contract's renting struct
+            nft_standard=lendingb.nft_standard,
             nft=lendingb.nft,
-            token_id=lendingb.token_id, lending_id=lendingb.lending_id,
+            token_id=lendingb.token_id,
+            lending_id=lendingb.lending_id
         )
 
         if self.lending_renting[first].renting is not None or self.lending_renting[second].renting is not None:
@@ -902,6 +911,7 @@ class StateMachine:
             rent_duration=1,
             rented_at=0,
             # not part of the contract's renting struct
+            nft_standard=lendinga.nft_standard,
             nft=lendinga.nft,
             token_id=lendinga.token_id,
             lending_id=lendinga.lending_id,
@@ -911,6 +921,7 @@ class StateMachine:
             rent_duration=1,
             rented_at=0,
             # not part of the contract's renting struct
+            nft_standard=lendingb.nft_standard,
             nft=lendingb.nft,
             token_id=lendingb.token_id,
             lending_id=lendingb.lending_id
@@ -920,6 +931,7 @@ class StateMachine:
             rent_duration=1,
             rented_at=0,
             # not part of the contract's renting struct
+            nft_standard=lendingc.nft_standard,
             nft=lendingc.nft,
             token_id=lendingc.token_id,
             lending_id=lendingc.lending_id
@@ -929,6 +941,7 @@ class StateMachine:
             rent_duration=1,
             rented_at=0,
             # not part of the contract's renting struct
+            nft_standard=lendingd.nft_standard,
             nft=lendingd.nft,
             token_id=lendingd.token_id,
             lending_id=lendingd.lending_id
